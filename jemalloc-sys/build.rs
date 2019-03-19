@@ -103,7 +103,10 @@ fn main() {
     fs::create_dir_all(&build_dir).unwrap();
     // Disable -Wextra warnings - jemalloc doesn't compile free of warnings with
     // it enabled: https://github.com/jemalloc/jemalloc/issues/1196
-    let compiler = cc::Build::new().extra_warnings(false).get_compiler();
+    let compiler = cc::Build::new()
+        .extra_warnings(false)
+        .flag("-fno-stack-protector")
+        .get_compiler();
     let cflags = compiler
         .args()
         .iter()
@@ -194,7 +197,9 @@ fn main() {
     .env("CFLAGS", cflags.clone())
     .env("LDFLAGS", cflags.clone())
     .env("CPPFLAGS", cflags.clone())
-    .arg("--disable-cxx");
+        .arg("--disable-cxx")
+        // causes gcc to generate references to fs
+        .arg("--disable-initial-exec-tls");
 
     if target.contains("ios") {
         // newer iOS deviced have 16kb page sizes:
@@ -224,6 +229,12 @@ fn main() {
         // disabling background threads at compile-time:
         malloc_conf += "background_thread:false";
     }
+
+    if !malloc_conf.is_empty() {
+        malloc_conf += ",";
+    }
+    malloc_conf += "dss:primary";
+
 
     if let Ok(malloc_conf_opts) = env::var("JEMALLOC_SYS_WITH_MALLOC_CONF") {
         malloc_conf += &format!(

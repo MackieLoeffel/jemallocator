@@ -7410,9 +7410,7 @@ fi
 
 	$as_echo "#define JEMALLOC_HAS_ALLOCA_H 1" >>confdefs.h
 
-	$as_echo "#define JEMALLOC_PROC_SYS_VM_OVERCOMMIT_MEMORY  " >>confdefs.h
-
-	$as_echo "#define JEMALLOC_THREADED_INIT  " >>confdefs.h
+		$as_echo "#define JEMALLOC_THREADED_INIT  " >>confdefs.h
 
 	$as_echo "#define JEMALLOC_USE_CXX_THROW  " >>confdefs.h
 
